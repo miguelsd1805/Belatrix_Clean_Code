@@ -4,63 +4,73 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Web.UI.WebControls;
+using CleanCode.FullRefactoring;
 
 namespace Project.UserControls
 {
     public class PostControl : System.Web.UI.UserControl
     {
-        private PostDbContext DBContext;
-
-
+        private readonly PostRepository _repository;
+        public PostControl (PostDbContext context)
+	    {
+            this._repository = new PostRepository(context);
+	    }
+        
         protected void Page_Load(object sender, EventArgs e)
         {
-            DBContext = new PostDbContext();
-
             if (Page.IsPostBack)
-            {
-                PostValidator validator = new PostValidator();
-                Post entity = new Post()
-                {
-                    // Map form fields to entity properties
-                    Id = Convert.ToInt32(PostId.Value),
-                    Title = PostTitle.Text.Trim(),
-                    Body = PostBody.Text.Trim()
-                };
-                ValidationResult results = validator.Validate(entity);
+                TrySavePost();
+            else
+                SetFormFromPostId();
+        }
 
-                if (results.IsValid)
+        private void TrySavePost(){
+            Post entity = CreatePostFromForm();
+            var validationResult = ValidatePost();
+            if (validationResult.IsValid)
+                _repository.SavePost(entity);
+            else
+                DisplayErrors(validationResult.Errors);
+        }
+
+        private ValidationResult ValidatePost(Post entity)
+        {
+            PostValidator validator = new PostValidator();
+            return validator.Validate(entity);
+        }
+
+        private Post CreatePostFromForm(){
+            return new Post()
+            {
+                // Map form fields to entity properties
+                Id = Convert.ToInt32(PostId.Value),
+                Title = PostTitle.Text.Trim(),
+                Body = PostBody.Text.Trim()
+            };
+        }
+
+        private void SetFormFromPostId(){
+            Post entity = _repository.GetPost(Convert.ToInt32(Request.QueryString["id"]));
+            PostBody.Text = entity.Body;
+            PostTitle.Text = entity.Title;
+        }
+
+        private void DisplayErrors(IEnumerable<ValidationError> errorList){
+            BulletedList summary = (BulletedList)FindControl("ErrorSummary");
+
+            // Display errors to the user
+            foreach (var failure in errorList)
+            {
+                Label errorMessage = FindControl(failure.PropertyName + "Error") as Label;
+
+                if (errorMessage == null)
                 {
-                    // Save to the database and continue to the next page
-                    DBContext.Posts.Add(entity);
-                    DBContext.SaveChanges();
+                    summary.Items.Add(new ListItem(failure.ErrorMessage));
                 }
                 else
                 {
-                    BulletedList summary = (BulletedList)FindControl("ErrorSummary");
-
-                    // Display errors to the user
-                    foreach (var failure in results.Errors)
-                    {
-                        Label errorMessage = FindControl(failure.PropertyName + "Error") as Label;
-
-                        if (errorMessage == null)
-                        {
-                            summary.Items.Add(new ListItem(failure.ErrorMessage));
-                        }
-                        else
-                        {
-                            errorMessage.Text = failure.ErrorMessage;
-                        }
-                    }
+                    errorMessage.Text = failure.ErrorMessage;
                 }
-            }
-            else
-            {
-                // Display form
-                Post entity = DBContext.Posts.SingleOrDefault(p => p.Id == Convert.ToInt32(Request.QueryString["id"]));
-                PostBody.Text = entity.Body;
-                PostTitle.Text = entity.Title;
-
             }
         }
 
@@ -69,6 +79,7 @@ namespace Project.UserControls
         public Label PostTitle { get; set; }
 
         public int? PostId { get; set; }
+
     }
 
     #region helpers

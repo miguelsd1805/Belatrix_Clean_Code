@@ -9,6 +9,7 @@ namespace CleanCode.PoorMethodSignatures
         {
             var userService = new UserService();
 
+            // Create different methods instead of using a flag
             var user = userService.GetUser("username", true, "password");
             var anotherUser = userService.GetUser("username", false);
         }

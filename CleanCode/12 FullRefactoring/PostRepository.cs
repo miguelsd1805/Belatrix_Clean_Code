@@ -6,9 +6,9 @@ namespace CleanCode.FullRefactoring
     {
         private readonly PostDbContext _dbContext;
 
-        public PostRepository()
+        public PostRepository(PostDbContext context)
         {
-            _dbContext = new PostDbContext();
+            _dbContext = context;
         }
 
         public Post GetPost(int postId)
