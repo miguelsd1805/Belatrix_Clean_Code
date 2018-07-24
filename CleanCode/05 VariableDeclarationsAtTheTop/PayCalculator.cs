@@ -14,8 +14,6 @@ namespace CleanCode.VariableDeclarationsAtTheTop
         {
             decimal overtimeHours = 0;
             decimal regularHours = 0;
-            decimal regularPay = 0;
-            decimal overtimePay = 0;
 
             decimal grossPay = 0;
 
@@ -23,8 +21,9 @@ namespace CleanCode.VariableDeclarationsAtTheTop
             {
                 if (hours > 80)
                 {
-                    overtimeHours = hours - 80;
                     regularHours = 80;
+                    overtimeHours = hours - regularHours;
+                    
                 }
                 else
                     regularHours = hours;
@@ -35,13 +34,15 @@ namespace CleanCode.VariableDeclarationsAtTheTop
             {
                 if (hours > 40)
                 {
-                    overtimeHours = hours - 40;
                     regularHours = 40;
+                    overtimeHours = hours - regularHours;
                 }
                 else
                     regularHours = hours;
             }
 
+            decimal regularPay = 0;
+            decimal overtimePay = 0;
 
             if (overtimeHours > 0m)
             {
