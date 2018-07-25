@@ -5,11 +5,11 @@ namespace CleanCode.MagicNumbers
     {
         public void ApproveDocument(int status)
         {
-            if (status == 1)
+            if (status == (int)DocumentStatus.Pending)
             {
                 // ...
             }
-            else if (status == 2)
+            else if (status == (int)DocumentStatus.Completed)
             {
                 // ...
             }
@@ -17,15 +17,20 @@ namespace CleanCode.MagicNumbers
 
         public void RejectDoument(string status)
         {
-            switch (status)
+            if (status == DocumentStatus.Pending.ToString())
             {
-                case "1":
-                    // ...
-                    break;
-                case "2":
-                    // ...
-                    break;
+                // ...
+            }
+            else if (status == DocumentStatus.Completed.ToString())
+            {
+                // ...
             }
         }
+    }
+
+    public enum DocumentStatus
+    {
+        Pending = 1,
+        Completed = 2
     }
 }
