@@ -1,24 +1,30 @@
 ﻿namespace SOLID._02_OpenClosed
 {
-    public class Employee
+    public class EmployeePermanent : Employee
     {
+        public EmployeePermanent(int id, string name) : base (id,name, "Permanent") {}
+
+        public override decimal CalculateBonus(decimal salary)
+        {
+            return salary * .1M;
+        }
+    }
+
+    public abstract class Employee
+    {
+        public int ID { get; set; }
+        public string EmployeeType { get; set; }
+        public string Name { get; set; }
+
         public Employee(int id, string name, string type)
         {
             this.ID = id;
             this.Name = name;
             this.EmployeeType = type;
         }
-
-        public int ID { get; set; }
-        public string EmployeeType { get; set; }
-        public string Name { get; set; }
-
-        public decimal CalculateBonus(decimal salary)
+        public virtual decimal CalculateBonus(decimal salary)
         {
-            if (this.EmployeeType == "Permanent")
-                return salary * .1M;
-            else
-                return salary * .05M;
+            return salary * .05M;
         }
     }
 }
