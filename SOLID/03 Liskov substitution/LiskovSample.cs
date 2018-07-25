@@ -7,7 +7,7 @@ namespace SOLID._03_Liskov_substitution
         decimal CalculateBonus(decimal salary);
     }
 
-    public abstract class Employee
+    public class Employee
     {
         public int ID { get; set; }
         public string Name { get; set; }
