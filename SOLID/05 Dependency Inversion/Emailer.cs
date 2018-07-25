@@ -6,12 +6,11 @@ using System.Threading.Tasks;
 
 namespace SOLID._05_Dependency_Inversion
 {
-    public class Emailer
+    public class Emailer : Device
     {
-        public String generateWeatherAlert(String weatherConditions)
+        public Emailer()
         {
-            String alert = "It is " + weatherConditions;
-            return alert;
+            SetCurrentConditions("sunny");
         }
     }
 }
